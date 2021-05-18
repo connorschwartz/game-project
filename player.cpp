@@ -2,12 +2,27 @@
 #include "util.h"
 #include "player.h"
 
+enum GAIT {
+	STANDING,
+	LEFT_FOOT,
+	RIGHT_FOOT
+};
+
+enum DIRECTION {
+	DOWN,
+	RIGHT,
+	LEFT,
+	UP
+};
+
 
 Player::Player(Renderer* renderer, AreaBlocks* blocks, int x, int y, int xBlocks, int yBlocks) {
-	sprite = Util::loadTexture("images/player.png", renderer);
-	spriteSheet[0] = {0,0,16,24};
-	spriteSheet[1] = {0,24,16,24};
-	spriteSheet[2] = {0,48,16,24};
+	sprites = Util::loadTexture("images/player.png", renderer);
+	for (int i = 0; i < SHEET_WIDTH; i++) {
+		for (int j = 0; j < SHEET_HEIGHT; j++) {
+			spriteSheet[i][j] = {i * SPRITE_WIDTH, j * SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT};
+		}
+	}
 	areaBlocks = blocks;
 	xPos = xBlockToPixel(x);
 	yPos = yBlockToPixel(y);
@@ -19,10 +34,14 @@ Player::Player(Renderer* renderer, AreaBlocks* blocks, int x, int y, int xBlocks
 	areaYBlocks = yBlocks;
 	moving = false;
 	lastMove = SDL_GetTicks();
+	stepStart = SDL_GetTicks();
+	lastStep = LEFT_FOOT;
+	xSprite = DOWN;
+	ySprite = STANDING;
 }
 
 Player::~Player() {
-	SDL_DestroyTexture(sprite);
+	SDL_DestroyTexture(sprites);
 }
 
 void Player::handleKeyStates(const Uint8* currentKeyStates) {
@@ -32,18 +51,30 @@ void Player::handleKeyStates(const Uint8* currentKeyStates) {
 		yVel = 0;
 		if (currentKeyStates[SDL_SCANCODE_W] && areaBlocks->isFree(xBlock, yBlock - 1)) {
 			yVel = -MAX_VELOCITY;
+			xSprite = UP;
 		}
 		else if (currentKeyStates[SDL_SCANCODE_S] && areaBlocks->isFree(xBlock, yBlock + 1)) {
 			yVel = MAX_VELOCITY;
+			xSprite = DOWN;
 		}
 		else if (currentKeyStates[SDL_SCANCODE_A] && areaBlocks->isFree(xBlock - 1, yBlock)) {
 			xVel = -MAX_VELOCITY;
+			xSprite = LEFT;
 		}
 		else if (currentKeyStates[SDL_SCANCODE_D] && areaBlocks->isFree(xBlock + 1, yBlock)) {
 			xVel = MAX_VELOCITY;
+			xSprite = RIGHT;
 		}
 		if (xVel != 0 || yVel != 0) {
 			moving = true;
+			if (lastStep == LEFT_FOOT) {
+				lastStep = RIGHT_FOOT;
+			}
+			else {
+				lastStep = LEFT_FOOT;
+			}
+			stepStart = SDL_GetTicks();
+			ySprite = lastStep;
 		}
 	}
 }
@@ -76,14 +107,13 @@ void Player::move() {
 			xBlock--;
 		}
 	}
+	if (lastMove - stepStart > STEP_TIME) {
+		ySprite = STANDING;
+	}
 }
 
 void Player::render(Renderer* renderer, int cameraX, int cameraY) {
-	int spriteNum = 0;
-	if (moving) {
-		spriteNum = 1;
-	}
-	renderer->render(sprite, &spriteSheet[spriteNum], topLeftX(xPos, cameraX), topLeftY(yPos, cameraY));
+	renderer->render(sprites, &spriteSheet[xSprite][ySprite], topLeftX(xPos, cameraX), topLeftY(yPos, cameraY));
 }
 
 int Player::xBlockToPixel(int block) {

@@ -31,8 +31,15 @@ public:
 
 private:
 
-	SDL_Texture* sprite;
-	SDL_Rect spriteSheet[3];
+	const int MAX_VELOCITY = 30;
+	const int STEP_TIME = 250;
+	const int SPRITE_HEIGHT = 24;
+	const int SPRITE_WIDTH = 16;
+	static const int SHEET_WIDTH = 4;
+	static const int SHEET_HEIGHT = 3;
+
+	SDL_Texture* sprites;
+	SDL_Rect spriteSheet[SHEET_WIDTH][SHEET_HEIGHT];
 	AreaBlocks* areaBlocks;
 	double xPos;
 	double yPos;
@@ -44,10 +51,10 @@ private:
 	int areaYBlocks;
 	bool moving;
 	int lastMove;
-
-	const int MAX_VELOCITY = 30;
-	const int SPRITE_HEIGHT = 24;
-	const int SPRITE_WIDTH = 16;
+	int stepStart;
+	int lastStep;
+	int xSprite;
+	int ySprite;
 };
 
 #endif
