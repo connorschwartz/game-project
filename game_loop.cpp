@@ -96,7 +96,7 @@ int main( int argc, char* args[] )
 		return 1;
 	}
 
-	area = new Area("asdf", renderer);
+	area = new Area("data/town", renderer);
 
 	int quit = 0;
 	SDL_Event e;

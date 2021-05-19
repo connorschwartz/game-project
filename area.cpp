@@ -6,30 +6,89 @@
 #include "area.h"
 #include "player.h"
 
-Area::Area(std::string fileName, Renderer* renderer) {
-	grassTextures = Util::loadTexture("images/grass.png", renderer);
-	testText = Util::loadTextureFromText("qwertyuiopasdfghjklzxcvbnm  1234567890", renderer, 15);
-	testText2 = Util::loadTextureFromText("QWERTYUIOPASDFGHJKLZXCVBNM", renderer, 15);
+void Area::initializeArea(std::string fileName) {
+	std::ifstream data;
+	data.open(fileName, std::ios_base::out);
+	std::string text1;
+	std::string text2;
+	data >> text1;
+	data >> text2;
+	testText = Util::loadTextureFromText(text1.c_str(), renderer, 15);
+	testText2 = Util::loadTextureFromText(text2.c_str(), renderer, 15);
+	data >> xBlocks;
+	data >> yBlocks;
+	xPixels = xBlocks * Util::BLOCK_SIZE;
+	yPixels = yBlocks * Util::BLOCK_SIZE;
+	areaBlocks = new AreaBlocks(xBlocks, yBlocks);
+	data.close();
+}
+
+void Area::initializeBackground(std::string fileName) {
+	std::ifstream data;
+	data.open(fileName, std::ios_base::out);
+	std::string backgroundImage;
+	data >> backgroundImage;
+	grassTextures = Util::loadTexture(backgroundImage, renderer);
 	grassTiles[0] = {0,16,16,16};
 	grassTiles[1] = {16,16,16,16};
 	grassTiles[2] = {32,16,16,16};
 	grassTiles[3] = {48,16,16,16};
-	xBlocks = 32;
-	yBlocks = 64;
-	xPixels = xBlocks * Util::BLOCK_SIZE;
-	yPixels = yBlocks * Util::BLOCK_SIZE;
-	std::ifstream map("data/grass_mapping.txt");
 	grassMap = new int * [xBlocks];
 	for (int i = 0; i < xBlocks; i++) {
 		grassMap[i] = new int[yBlocks];
 		for (int j = 0; j < yBlocks; j++) {
 			int tileType = -1;
-			map >> grassMap[i][j];
+			data >> grassMap[i][j];
 		}
 	}
-	areaBlocks = new AreaBlocks(xBlocks, yBlocks);
-	player = new Player(renderer, areaBlocks, 5, 5, xBlocks, yBlocks);
-	Mix_PlayMusic(testMusic, -1);
+	data.close();
+}
+
+void Area::initializeStillObjects(std::string fileName) {
+	std::ifstream data;
+	data.open(fileName, std::ios_base::out);
+	int index;
+	data >> index;
+	std::string treeFilename;
+	data >> treeFilename;
+	SDL_Texture * treeSprite = Util::loadTexture(treeFilename, renderer);
+	int spriteNum;
+	data >> spriteNum;
+	int xPos, yPos;
+	data >> xPos;
+	data >> yPos;
+	int blockWidth, blockHeight;
+	data >> blockWidth;
+	data >> blockHeight;
+	int width, height;
+	data >> width;
+	data >> height;
+	tree = new StillObject(treeSprite, areaBlocks, xPos, yPos, xBlocks, yBlocks, blockWidth, blockHeight, width, height);
+	data.close();
+}
+
+void Area::initializePlayer(std::string fileName) {
+	std::ifstream data;
+	data.open(fileName, std::ios_base::out);
+	std::string playerFilename;
+	data >> playerFilename;
+	SDL_Texture * playerSprite = Util::loadTexture(playerFilename, renderer);
+	int xPos, yPos;
+	data >> xPos;
+	data >> yPos;
+	int width, height;
+	data >> width;
+	data >> height;
+	player = new Player(playerSprite, areaBlocks, xPos, yPos, xBlocks, yBlocks, width, height);
+	data.close();
+}
+
+Area::Area(std::string directory, Renderer * r) {
+	renderer = r;
+	initializeArea(directory + "/area.txt");
+	initializeBackground(directory + "/background.txt");
+	initializeStillObjects(directory + "/still_objects.txt");
+	initializePlayer(directory + "/player.txt");
 }
 
 Area::~Area() {
@@ -72,6 +131,7 @@ void Area::render(Renderer* renderer) {
 	renderer->render(testText, 30, 200);
 	renderer->render(testText2, 30, 210);
 	player->render(renderer, cameraX, cameraY);
+	tree->render(renderer, cameraX, cameraY);
 }
 
 

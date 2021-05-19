@@ -16,22 +16,16 @@ enum DIRECTION {
 };
 
 
-Player::Player(Renderer* renderer, AreaBlocks* blocks, int x, int y, int xBlocks, int yBlocks) {
-	sprites = Util::loadTexture("images/player.png", renderer);
+Player::Player(SDL_Texture * s, AreaBlocks* blocks, int x, int y, int xBlocks, int yBlocks, int width, int height) : VisibleObject(x, y, xBlocks, yBlocks, width, height) {
+	sprites = s;
 	for (int i = 0; i < SHEET_WIDTH; i++) {
 		for (int j = 0; j < SHEET_HEIGHT; j++) {
 			spriteSheet[i][j] = {i * SPRITE_WIDTH, j * SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT};
 		}
 	}
 	areaBlocks = blocks;
-	xPos = xBlockToPixel(x);
-	yPos = yBlockToPixel(y);
 	xVel = 0;
 	yVel = 0;
-	xBlock = x;
-	yBlock = y;
-	areaXBlocks = xBlocks;
-	areaYBlocks = yBlocks;
 	moving = false;
 	lastMove = SDL_GetTicks();
 	stepStart = SDL_GetTicks();
@@ -41,7 +35,7 @@ Player::Player(Renderer* renderer, AreaBlocks* blocks, int x, int y, int xBlocks
 }
 
 Player::~Player() {
-	SDL_DestroyTexture(sprites);
+
 }
 
 void Player::handleKeyStates(const Uint8* currentKeyStates) {
@@ -114,46 +108,6 @@ void Player::move() {
 
 void Player::render(Renderer* renderer, int cameraX, int cameraY) {
 	renderer->render(sprites, &spriteSheet[xSprite][ySprite], topLeftX(xPos, cameraX), topLeftY(yPos, cameraY));
-}
-
-int Player::xBlockToPixel(int block) {
-	return (block + 1) * Util::BLOCK_SIZE;
-}
-
-int Player::yBlockToPixel(int block) {
-	return (block + 1) * Util::BLOCK_SIZE;
-}
-
-int Player::topLeftX(double x, int camX) {
-	return x - camX - SPRITE_WIDTH;
-}
-
-int Player::topLeftY(double y, int camY) {
-	return y - camY - SPRITE_HEIGHT;
-}
-
-int Player::getCenterX() {
-	return (int) xPos - SPRITE_WIDTH / 2;
-}
-
-int Player::getCenterY() {
-	return (int) yPos - SPRITE_HEIGHT / 2;
-}
-
-int Player::getPosX() {
-	return (int) xPos;
-}
-
-int Player::getPosY() {
-	return (int) yPos;
-}
-
-int Player::getWidth() {
-	return SPRITE_WIDTH;
-}
-
-int Player::getHeight() {
-	return SPRITE_HEIGHT;
 }
 
 
