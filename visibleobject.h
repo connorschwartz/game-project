@@ -6,7 +6,7 @@
 class VisibleObject {
 public:
 
-	VisibleObject(int x, int y, int xBlocks, int yBlocks, int width, int height);
+	VisibleObject(int x, int y, int width, int height);
 	virtual ~VisibleObject() = 0;
 
 	virtual void render(Renderer* renderer, int cameraX, int cameraY) = 0;
@@ -26,8 +26,6 @@ protected:
 
 	const int SPRITE_WIDTH;
 	const int SPRITE_HEIGHT;
-	const int AREA_XBLOCKS;
-	const int AREA_YBLOCKS;
 
 	double xPos;
 	double yPos;

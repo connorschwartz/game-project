@@ -16,7 +16,7 @@ enum DIRECTION {
 };
 
 
-Player::Player(SDL_Texture * s, AreaBlocks* blocks, int x, int y, int xBlocks, int yBlocks, int width, int height) : VisibleObject(x, y, xBlocks, yBlocks, width, height) {
+Player::Player(SDL_Texture * s, AreaBlocks* blocks, int x, int y, int width, int height) : VisibleObject(x, y, width, height) {
 	sprites = s;
 	for (int i = 0; i < SHEET_WIDTH; i++) {
 		for (int j = 0; j < SHEET_HEIGHT; j++) {
@@ -32,6 +32,7 @@ Player::Player(SDL_Texture * s, AreaBlocks* blocks, int x, int y, int xBlocks, i
 	lastStep = LEFT_FOOT;
 	xSprite = DOWN;
 	ySprite = STANDING;
+	areaBlocks->block(xBlock, yBlock);
 }
 
 Player::~Player() {

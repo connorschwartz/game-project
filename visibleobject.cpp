@@ -1,8 +1,7 @@
 #include "visibleobject.h"
 #include "util.h"
-#include <iostream>
 
-VisibleObject::VisibleObject(int x, int y, int xBlocks, int yBlocks, int width, int height) : SPRITE_WIDTH(width), SPRITE_HEIGHT(height), AREA_XBLOCKS(xBlocks), AREA_YBLOCKS(yBlocks) {
+VisibleObject::VisibleObject(int x, int y, int width, int height) : SPRITE_WIDTH(width), SPRITE_HEIGHT(height) {
 	xPos = xBlockToPixel(x);
 	yPos = yBlockToPixel(y);
 	xBlock = x;

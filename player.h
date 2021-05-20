@@ -10,7 +10,7 @@
 class Player : public VisibleObject {
 public:
 
-	Player(SDL_Texture * s, AreaBlocks* areaBlocks, int x, int y, int xBlocks, int yBlocks, int width, int height);
+	Player(SDL_Texture * s, AreaBlocks* areaBlocks, int x, int y, int width, int height);
 	~Player();
 
 	void handleKeyStates(const Uint8* currentKeyStates);

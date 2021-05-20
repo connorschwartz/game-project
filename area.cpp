@@ -60,10 +60,10 @@ void Area::initializeStillObjects(std::string fileName) {
 	int blockWidth, blockHeight;
 	data >> blockWidth;
 	data >> blockHeight;
-	int width, height;
-	data >> width;
-	data >> height;
-	tree = new StillObject(treeSprite, areaBlocks, xPos, yPos, xBlocks, yBlocks, blockWidth, blockHeight, width, height);
+	int pixelWidth, pixelHeight;
+	data >> pixelWidth;
+	data >> pixelHeight;
+	tree = new StillObject(treeSprite, areaBlocks, xPos, yPos, blockWidth, blockHeight, pixelWidth, pixelHeight);
 	data.close();
 }
 
@@ -76,10 +76,10 @@ void Area::initializePlayer(std::string fileName) {
 	int xPos, yPos;
 	data >> xPos;
 	data >> yPos;
-	int width, height;
-	data >> width;
-	data >> height;
-	player = new Player(playerSprite, areaBlocks, xPos, yPos, xBlocks, yBlocks, width, height);
+	int pixelWidth, pixelHeight;
+	data >> pixelWidth;
+	data >> pixelHeight;
+	player = new Player(playerSprite, areaBlocks, xPos, yPos, pixelWidth, pixelHeight);
 	data.close();
 }
 

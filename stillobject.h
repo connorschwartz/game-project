@@ -5,7 +5,7 @@
 class StillObject : public VisibleObject {
 public:
 
-	StillObject(SDL_Texture * s, AreaBlocks* areaBlocks, int x, int y, int xBlocks, int yBlocks, int blockWidth, int blockHeight, int width, int height);
+	StillObject(SDL_Texture * s, AreaBlocks* areaBlocks, int x, int y, int blockWidth, int blockHeight, int width, int height);
 	~StillObject();
 
 	void render(Renderer* renderer, int cameraX, int cameraY);
