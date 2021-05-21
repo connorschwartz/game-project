@@ -5,7 +5,6 @@ all: game
 
 clean:
 	rm game.exe
-	rm *.o
 
 game: game_loop.cpp
 	g++ $(INCLUDED_CLASSES) $(LINKER_FLAGS) -o game.exe

@@ -6,6 +6,7 @@
 #include <iostream>
 #include "util.h"
 
+// Loads an image from a file and returns it as a texture
 SDL_Texture* Util::loadTexture(std::string fname, Renderer *renderer) {
 	SDL_Texture* newTexture = nullptr;
 
@@ -25,9 +26,9 @@ SDL_Texture* Util::loadTexture(std::string fname, Renderer *renderer) {
 	return newTexture;
 }
 
+// Loads a piece of text as a texture, with the given font, size, and color
 SDL_Texture* Util::loadTextureFromText(std::string text, Renderer *renderer, std::string fontName, int fontSize, SDL_Color color) {
 	TTF_Font* font = TTF_OpenFont(fontName.c_str(), fontSize);
-	// Render the surface from the file
 	SDL_Surface* textSurface = TTF_RenderText_Solid(font, text.c_str(), color);
 	SDL_Texture* texture = nullptr;
 	TTF_CloseFont(font);
@@ -41,11 +42,13 @@ SDL_Texture* Util::loadTextureFromText(std::string text, Renderer *renderer, std
 	return texture;
 }
 
+// Loads a piece of text as a texture, with the given size and the default font and color
 SDL_Texture* Util::loadTextureFromText(std::string text, Renderer *renderer, int fontSize) {
 	SDL_Texture* texture = loadTextureFromText(text, renderer, "fonts/AtlantisInternational.ttf", fontSize, {0, 0, 0});
 	return texture;
 }
 
+// Load in a piece of music from the given file
 Mix_Music* Util::loadMusic(std::string fileName) {
 	Mix_Music* music = Mix_LoadMUS(fileName.c_str());
 	if (music == nullptr) {
@@ -54,6 +57,7 @@ Mix_Music* Util::loadMusic(std::string fileName) {
 	return music;
 }
 
+// Load in a sound from the given file
 Mix_Chunk* Util::loadSound(std::string fileName) {
 	Mix_Chunk* sound = Mix_LoadWAV(fileName.c_str());
 	if (sound == nullptr) {

@@ -9,25 +9,27 @@
 #include "area.h"
 #include "renderer.h"
 
+// High-level mode to allow us to decide what to do in the main game loop
 enum Mode {
 	TITLE,
 	OVERWORLD,
 	BATTLE,
 	MENU
 };
+int current_mode;
 
-
-//The window we'll be rendering to
+// The window we'll be rendering to
 SDL_Window* window = nullptr;
 Renderer* renderer = nullptr;
 
+// The current area (town, overworld, etc.)
 Area* area = nullptr;
 
+// We have a logical game size (GAME_WIDTH x GAME_HEIGHT) and a physical size, which can be scaled up by
+// an integer (scaleFactor) based on the size of the game window
 int scaleFactor = 3;
 int screenWidth = Util::GAME_WIDTH * scaleFactor;
 int screenHeight = Util::GAME_HEIGHT * scaleFactor;
-
-int current_mode;
 
 int init() {
 	// Initialize SDL
@@ -101,16 +103,21 @@ int main( int argc, char* args[] )
 	int quit = 0;
 	SDL_Event e;
 	renderer->setScale(scaleFactor);
+	// Main loop - run until the game ends
 	while (quit == 0) {
+		// Handle player input
 		while (SDL_PollEvent(&e) != 0) {
 			if (e.type == SDL_QUIT) {
 				quit = 1;
 			}
+			// When the window size changes, update the scale factor to make the game as big as possible
 			else if (e.type == SDL_WINDOWEVENT && e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
 				screenWidth = e.window.data1;
 				screenHeight = e.window.data2;
 				scaleFactor = std::min(screenWidth / Util::GAME_WIDTH, screenHeight / Util::GAME_HEIGHT);
 				renderer->setScale(scaleFactor);
+				// Set the x and y distances between the top left corner of the window and the top left corner
+				// of the game. This allows us to center the game in the window.
 				renderer->setXOffset((screenWidth - scaleFactor * Util::GAME_WIDTH) / (2 * scaleFactor));
 				renderer->setYOffset((screenHeight - scaleFactor * Util::GAME_HEIGHT) / (2 * scaleFactor));
 			}

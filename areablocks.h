@@ -3,6 +3,7 @@
 
 class AreaBlocks {
 public:
+	// Structure containing the index number of the byte within the map and the mask to retrieve the desired bit
 	struct BlockMapping {
 		int byteNum;
 		unsigned char mask;
@@ -11,18 +12,23 @@ public:
 	AreaBlocks(int width, int height);
 	~AreaBlocks();
 
-	void block(int x, int y);
-	void blockRectangle(int x, int y, int width, int height);
+	void markUsed(int x, int y);									// Mark a single block as used
+	void markUsedRectangle(int x, int y, int width, int height);	// Mark a rectangular group of blocks as used
 
+	// Mark a block as free
+	void markFree(int x, int y);
+
+	// Convert an (x, y) pair to a byte number and mask to find the corresponding bit
 	BlockMapping getBlockMapping(int x, int y);
 
+	// Return true if the block at (x, y) is free, false otherwise
 	bool isFree(int x, int y);
 
 private:
-	unsigned char * bitmap;
+	unsigned char * bitmap;	// The map
 
-	int xBlocks;
-	int yBlocks;
+	int areaWidth;			// Width of the area
+	int areaHeight;			// Height of the area
 };
 
 #endif

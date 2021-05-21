@@ -22,6 +22,8 @@ public:
 	//Screen dimension constants
 	static const int GAME_WIDTH = 256;
 	static const int GAME_HEIGHT = 224;
+
+	// Width and height of each block, in pixels
 	static const int BLOCK_SIZE = 16;
 };
 
