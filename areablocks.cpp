@@ -48,6 +48,13 @@ void AreaBlocks::markFree(int x, int y) {
 }
 
 bool AreaBlocks::isFree(int x, int y) {
+//	for (int i = 0; i < 64; i++) {
+//		for (int j = 0; j < 4; j++) {
+//			std::cout << (int) bitmap[i * 4 + j] << " ";
+//		}
+//		std::cout << std::endl;
+//	}
+//	std::cout << std::endl;
 	// Block is not free if it's out of bounds
 	if (x < 0 || y < 0 || x >= areaWidth || y >= areaHeight) {
 		return false;

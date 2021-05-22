@@ -4,6 +4,7 @@
 #include "areablocks.h"
 #include "renderer.h"
 #include "stillobject.h"
+#include "npc.h"
 
 class Area {
 public:
@@ -14,6 +15,7 @@ public:
 	void initializeArea(std::string fileName);
 	void initializeBackground(std::string fileName);
 	void initializeStillObjects(std::string fileName);
+	void initializeNPCs(std::string fileName);
 	void initializePlayer(std::string fileName);
 
 	// Functions to handle user input
@@ -35,6 +37,8 @@ private:
 	AreaBlocks* areaBlocks;							// Mapping of free and used blocks
 	std::vector<StillObject *> stillObjects;		// Objects that don't move
 	std::vector<SDL_Texture *> stillObjectSprites;	// Sprites for objects that don't move
+	std::vector<NPC *> npcs;						// NPC objects
+	std::vector<SDL_Texture *> npcSprites;			// Sprites for NPCs
 	int areaWidth;			// Width of the area in blocks
 	int areaHeight;			// Height of the area in blocks
 

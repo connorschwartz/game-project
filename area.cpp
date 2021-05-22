@@ -7,6 +7,7 @@
 #include "util.h"
 #include "area.h"
 #include "player.h"
+#include "npc.h"
 
 using namespace std;
 
@@ -89,6 +90,42 @@ void Area::initializeStillObjects(string fileName) {
 	data.close();
 }
 
+void Area::initializeNPCs(string fileName) {
+	ifstream data;
+	data.open(fileName, ios_base::out);
+	string line;
+	getline(data, line);	// Skip the first line, since it's just the header for the Images section
+	string terminator = "NPCs:";
+	NPC * newNPC;
+	// Load in the sprite for each filename listed in the data file, stopping when we reach the NPCs section
+	getline(data, line);
+	while (line.compare(terminator) != 0) {
+		stringstream stream(line);
+		int index;
+		string filename;
+		stream >> index >> filename;
+		// Get the sprite and add it to the list
+		SDL_Texture * sprite = Util::loadTexture(filename, renderer);
+		npcSprites.push_back(sprite);
+		getline(data, line);
+	}
+	// Load in the data for each object or rectangular group of objects
+	int spriteNum;		// Index number of the sprite for the object
+	int xBlock;			// x-coordinate of the NPC's initial block
+	int yBlock;			// y-coordinate of the NPC's initial block
+	int pixelWidth;		// Width of the sprite, in pixels
+	int pixelHeight;	// Height of the sprite, in pixels
+	int speed;			// NPC's speed, in pixels/second
+	while (getline(data, line) && !line.empty()) {
+		stringstream stream(line);
+		stream >> spriteNum >> xBlock >> yBlock >> pixelWidth >> pixelHeight >> speed;
+		// Create the NPC, passing the rest of the line, since it contains the NPC's behavior data
+		newNPC = new NPC(npcSprites[spriteNum], areaBlocks, xBlock, yBlock, pixelWidth, pixelHeight, speed, stream);
+		npcs.push_back(newNPC);
+	}
+	data.close();
+}
+
 void Area::initializePlayer(string fileName) {
 	ifstream data;
 	data.open(fileName, ios_base::out);
@@ -113,12 +150,16 @@ Area::Area(string directory, Renderer * r) {
 	initializeArea(directory + "/area.txt");
 	initializeBackground(directory + "/background.txt");
 	initializeStillObjects(directory + "/still_objects.txt");
+	initializeNPCs(directory + "/npcs.txt");
 	initializePlayer(directory + "/player.txt");
 }
 
 Area::~Area() {
 	for (int i = 0; i < stillObjectSprites.size(); i++) {
 		SDL_DestroyTexture(stillObjectSprites[i]);
+	}
+	for (int i = 0; i < npcSprites.size(); i++) {
+		SDL_DestroyTexture(npcSprites[i]);
 	}
 	SDL_DestroyTexture(grassTextures);
 	SDL_DestroyTexture(testText);
@@ -137,6 +178,10 @@ void Area::handleKeyStates(const Uint8* currentKeyStates) {
 
 void Area::moveObjects() {
 	player->move();
+	for (auto & npc : npcs) {
+		npc->chooseDirection();
+		npc->move();
+	}
 }
 
 void Area::render(Renderer* renderer) {
@@ -163,12 +208,17 @@ void Area::render(Renderer* renderer) {
 	vector<VisibleObject *> objectsToDraw;
 	objectsToDraw.push_back(player);
 	player->render(renderer, cameraX, cameraY);
+	for (auto & npc : npcs) {
+		// Only bother drawing onscreen NPCs
+		if (npc->isOnscreen(cameraX, cameraY)) {
+			objectsToDraw.push_back(npc);
+		}
+	}
 	for (auto & item : stillObjects) {
 		// Only bother drawing onscreen objects
 		if (item->isOnscreen(cameraX, cameraY)) {
 			objectsToDraw.push_back(item);
 		}
-		item->render(renderer, cameraX, cameraY);
 	}
 	// Sort the onscreen objects by vertical position, so that they will overlap properly
 	sort(objectsToDraw.begin(), objectsToDraw.end(), VisibleObject::compare);

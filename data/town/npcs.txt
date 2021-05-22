@@ -1,0 +1,4 @@
+Images:
+0 images/youngboy.png
+NPCs:
+0 20 20 16 20 50 RANDOM_WALK 18 18 22 22 1000
