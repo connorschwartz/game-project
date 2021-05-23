@@ -166,6 +166,8 @@ Area::~Area() {
 	SDL_DestroyTexture(testText2);
     delete player;
 	delete grassMap;
+	stillObjects.clear();
+	npcs.clear();
 }
 
 void Area::handleInput(SDL_Event e) {
