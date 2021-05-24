@@ -14,6 +14,7 @@ enum Mode {
 	TITLE,
 	OVERWORLD,
 	BATTLE,
+	DIALOG,
 	MENU
 };
 int current_mode;

@@ -66,6 +66,14 @@ int VisibleObject::getPosY() {
 	return (int) yPos;
 }
 
+int VisibleObject::getBlockX() {
+	return xBlock;
+}
+
+int VisibleObject::getBlockY() {
+	return yBlock;
+}
+
 int VisibleObject::getWidth() {
 	return SPRITE_WIDTH;
 }

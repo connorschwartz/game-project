@@ -12,6 +12,7 @@ NPC::NPC(SDL_Texture * s, AreaBlocks* blocks, int x, int y, int width, int heigh
 	areaBlocks = blocks;
 	// Mark the NPC's starting position as used
 	areaBlocks->markUsed(xBlock, yBlock);
+	dialog.push_back("testText");
 	std::string movementType;
 	pattern >> movementType;
 	// For random walks, get the data for the rectangle in which the NPC will move
@@ -68,7 +69,7 @@ NPC::NPC(SDL_Texture * s, AreaBlocks* blocks, int x, int y, int width, int heigh
 }
 
 NPC::~NPC() {
-
+	dialog.clear();
 }
 
 void NPC::chooseDirection() {
@@ -123,9 +124,19 @@ void NPC::chooseDirection() {
 	setDirection();
 }
 
+void NPC::timeSkip(int time) {
+	lastMove += time;
+	lastStep += time;
+	lastStepChoiceTime += time;
+}
+
 void NPC::render(Renderer* renderer, int cameraX, int cameraY) {
 	// Draw the player using the current sprite
 	renderer->render(sprites, &spriteSheet[spriteDirection][spriteGait], topLeftX(cameraX), topLeftY(cameraY));
+}
+
+std::vector<std::string> NPC::getDialog() {
+	return dialog;
 }
 
 

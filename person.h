@@ -29,6 +29,13 @@ public:
 
 	void move();
 
+	// Timeskip to keep the person still during dialog or menu-related pauses
+	virtual void timeSkip(int time) = 0;
+
+	// Accessors
+	int getSpriteDirection();
+	void setSpriteDirection(int direction);
+
 protected:
 
 	AreaBlocks* areaBlocks;			// Used to track which blocks can be moved to

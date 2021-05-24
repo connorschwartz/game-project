@@ -8,6 +8,7 @@
 #include "area.h"
 #include "player.h"
 #include "npc.h"
+#include "dialogtext.h"
 
 using namespace std;
 
@@ -18,8 +19,6 @@ void Area::initializeArea(string fileName) {
 	string text2;
 	data >> text1;
 	data >> text2;
-	testText = Util::loadTextureFromText(text1.c_str(), renderer, 15);
-	testText2 = Util::loadTextureFromText(text2.c_str(), renderer, 15);
 	data >> areaWidth;
 	data >> areaHeight;
 	areaBlocks = new AreaBlocks(areaWidth, areaHeight);
@@ -147,6 +146,8 @@ void Area::initializePlayer(string fileName) {
 
 Area::Area(string directory, Renderer * r) {
 	renderer = r;
+	dialogMode = false;
+	currentDialog = nullptr;
 	initializeArea(directory + "/area.txt");
 	initializeBackground(directory + "/background.txt");
 	initializeStillObjects(directory + "/still_objects.txt");
@@ -170,19 +171,98 @@ Area::~Area() {
 	npcs.clear();
 }
 
-void Area::handleInput(SDL_Event e) {
+void Area::initiateDialog() {
+	dialogMode = true;
+	dialogStartTime = SDL_GetTicks();
+	currentDialog = new DialogText(talkingNPC->getDialog());
+	int playerDirection = player->getSpriteDirection();
+	npcOldDirection = talkingNPC->getSpriteDirection();
+	int npcDirection;
+	if (playerDirection == Person::LEFT) {
+		npcDirection = Person::RIGHT;
+	}
+	else if (playerDirection == Person::RIGHT) {
+		npcDirection = Person::LEFT;
+	}
+	else if (playerDirection == Person::UP) {
+		npcDirection = Person::DOWN;
+	}
+	else if (playerDirection == Person::DOWN) {
+		npcDirection = Person::UP;
+	}
+	talkingNPC->setSpriteDirection(npcDirection);
+}
 
+void Area::checkDialog() {
+	if (!dialogMode) {
+		int xBlock = player->getBlockX();
+		int yBlock = player->getBlockY();
+		int playerDirection = player->getSpriteDirection();
+		// Get the space that the player is facing
+		if (playerDirection == Person::LEFT) {
+			xBlock--;
+		}
+		else if (playerDirection == Person::RIGHT) {
+			xBlock++;
+		}
+		else if (playerDirection == Person::UP) {
+			yBlock--;
+		}
+		else if (playerDirection == Person::DOWN) {
+			yBlock++;
+		}
+		// See if there's an NPC in that space
+		talkingNPC = nullptr;
+		for (auto & npc : npcs) {
+			if (npc->getBlockX() == xBlock && npc->getBlockY() == yBlock) {
+				talkingNPC = npc;
+				break;
+			}
+		}
+		if (talkingNPC != nullptr) {
+			initiateDialog();
+		}
+	}
+}
+
+void Area::concludeDialog() {
+	dialogMode = false;
+	delete currentDialog;
+	// Return the talking NPC to their original orientation
+	talkingNPC->setSpriteDirection(npcOldDirection);
+	// Objects should have stayed still during the dialog - update all of them accordingly
+	int timeUpdate = SDL_GetTicks() - dialogStartTime;
+	player->timeSkip(timeUpdate);
+	for (auto & npc : npcs) {
+		npc->timeSkip(timeUpdate);
+	}
+}
+
+void Area::handleInput(SDL_Event e) {
+	if (e.type == SDL_KEYDOWN && e.key.repeat == 0 && e.key.keysym.sym == SDLK_SPACE) {
+		checkDialog();
+	}
 }
 
 void Area::handleKeyStates(const Uint8* currentKeyStates) {
-	player->handleKeyStates(currentKeyStates);
+	if (!dialogMode) {
+		player->handleKeyStates(currentKeyStates);
+	}
 }
 
 void Area::moveObjects() {
-	player->move();
-	for (auto & npc : npcs) {
-		npc->chooseDirection();
-		npc->move();
+	if (dialogMode) {
+		if (SDL_GetTicks() - dialogStartTime > 1000) {
+			concludeDialog();
+		}
+		currentDialog->update(renderer);
+	}
+	else {
+		player->move();
+		for (auto & npc : npcs) {
+			npc->chooseDirection();
+			npc->move();
+		}
 	}
 }
 
@@ -204,8 +284,6 @@ void Area::render(Renderer* renderer) {
 			renderer->render(grassTextures, &grassTiles[grassMap[i][j]], i * Util::BLOCK_SIZE - cameraX, j * Util::BLOCK_SIZE - cameraY);
 		}
 	}
-	renderer->render(testText, 30, 200);
-	renderer->render(testText2, 30, 210);
 	// Draw the player and objects
 	vector<VisibleObject *> objectsToDraw;
 	objectsToDraw.push_back(player);
@@ -226,5 +304,8 @@ void Area::render(Renderer* renderer) {
 	sort(objectsToDraw.begin(), objectsToDraw.end(), VisibleObject::compare);
 	for (auto & item : objectsToDraw) {
 		item->render(renderer, cameraX, cameraY);
+	}
+	if (dialogMode) {
+		currentDialog->render(renderer, 30, 30);
 	}
 }

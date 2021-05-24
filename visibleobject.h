@@ -31,6 +31,8 @@ public:
 	// Accessors
 	int getPosX();
 	int getPosY();
+	int getBlockX();
+	int getBlockY();
 	int getWidth();
 	int getHeight();
 

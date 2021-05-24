@@ -26,6 +26,13 @@ public:
 	// Draw the NPC
 	void render(Renderer* renderer, int cameraX, int cameraY);
 
+	// Used to stop player movement during dialog
+	void timeSkip(int time);
+
+	// Accessors
+
+	std::vector<std::string> getDialog();
+
 private:
 
 	const int MAX_SPEED;			// NPC's speed (pixels/second)
@@ -36,9 +43,10 @@ private:
 	SDL_Rect spriteSheet[SHEET_WIDTH][SHEET_HEIGHT];		// Rectangles to represent the sprites on the sheet
 	SDL_Texture* sprites;			// Sprite sheet
 
-	int movementPattern;			// Pattern of NPC movement decisions (from Patterns enum)
-	std::vector<int> movementData;	// Information about NPC movement; format depends on movementPattern
-	int lastStepChoiceTime;			// Time when the NPC last tried to choose a step direction
+	int movementPattern;				// Pattern of NPC movement decisions (from Patterns enum)
+	std::vector<int> movementData;		// Information about NPC movement; format depends on movementPattern
+	std::vector<std::string> dialog;	// NPC's list of dialog
+	int lastStepChoiceTime;				// Time when the NPC last tried to choose a step direction
 
 };
 

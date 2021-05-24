@@ -19,6 +19,9 @@ public:
 	// Draw the player
 	void render(Renderer* renderer, int cameraX, int cameraY);
 
+	// Used to stop player movement during dialog
+	void timeSkip(int time);
+
 private:
 
 	const int MAX_SPEED = 30;			// Player's speed (pixels/second)

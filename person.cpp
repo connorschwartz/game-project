@@ -101,3 +101,11 @@ void Person::move() {
 		spriteGait = STANDING;
 	}
 }
+
+int Person::getSpriteDirection() {
+	return spriteDirection;
+}
+
+void Person::setSpriteDirection(int direction) {
+	spriteDirection = direction;
+}

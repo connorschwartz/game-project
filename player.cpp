@@ -45,6 +45,11 @@ void Player::handleKeyStates(const Uint8* currentKeyStates) {
 	setDirection();
 }
 
+void Player::timeSkip(int time) {
+	lastMove += time;
+	lastStep += time;
+}
+
 void Player::render(Renderer* renderer, int cameraX, int cameraY) {
 	// Draw the player using the current sprite
 	renderer->render(sprites, &spriteSheet[spriteDirection][spriteGait], topLeftX(cameraX), topLeftY(cameraY));

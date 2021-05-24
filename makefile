@@ -1,5 +1,5 @@
 LINKER_FLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -I/usr/include/SDL2
-INCLUDED_CLASSES = util.cpp game_loop.cpp area.cpp player.cpp areablocks.cpp renderer.cpp visibleobject.cpp stillobject.cpp person.cpp npc.cpp
+INCLUDED_CLASSES = util.cpp game_loop.cpp area.cpp player.cpp areablocks.cpp renderer.cpp visibleobject.cpp stillobject.cpp person.cpp npc.cpp dialogtext.cpp
 
 all: game
 
