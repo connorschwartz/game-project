@@ -115,11 +115,18 @@ void Area::initializeNPCs(string fileName) {
 	int pixelWidth;		// Width of the sprite, in pixels
 	int pixelHeight;	// Height of the sprite, in pixels
 	int speed;			// NPC's speed, in pixels/second
+	int numLines;		// Number of dialog lines
 	while (getline(data, line) && !line.empty()) {
 		stringstream stream(line);
-		stream >> spriteNum >> xBlock >> yBlock >> pixelWidth >> pixelHeight >> speed;
+		stream >> spriteNum >> xBlock >> yBlock >> pixelWidth >> pixelHeight >> speed >> numLines;
+		std::vector<std::string> npcDialog;
+		std::string nextLine;
+		for (int i = 0; i < numLines; i++) {
+			getline(data, nextLine);
+			npcDialog.push_back(nextLine);
+		}
 		// Create the NPC, passing the rest of the line, since it contains the NPC's behavior data
-		newNPC = new NPC(npcSprites[spriteNum], areaBlocks, xBlock, yBlock, pixelWidth, pixelHeight, speed, stream);
+		newNPC = new NPC(npcSprites[spriteNum], areaBlocks, xBlock, yBlock, pixelWidth, pixelHeight, speed, stream, npcDialog);
 		npcs.push_back(newNPC);
 	}
 	data.close();
@@ -163,8 +170,6 @@ Area::~Area() {
 		SDL_DestroyTexture(npcSprites[i]);
 	}
 	SDL_DestroyTexture(grassTextures);
-	SDL_DestroyTexture(testText);
-	SDL_DestroyTexture(testText2);
     delete player;
 	delete grassMap;
 	stillObjects.clear();
@@ -239,8 +244,19 @@ void Area::concludeDialog() {
 }
 
 void Area::handleInput(SDL_Event e) {
+	// When the user hits the space bar...
 	if (e.type == SDL_KEYDOWN && e.key.repeat == 0 && e.key.keysym.sym == SDLK_SPACE) {
-		checkDialog();
+		// Advance the dialog if we're in dialog mode
+		if (dialogMode) {
+			// If we're in the final step of the dialog, end it
+			if (!currentDialog->advance()) {
+				concludeDialog();
+			}
+		}
+		// Try to initiate dialog mode otherwise
+		else {
+			checkDialog();
+		}
 	}
 }
 
@@ -252,9 +268,6 @@ void Area::handleKeyStates(const Uint8* currentKeyStates) {
 
 void Area::moveObjects() {
 	if (dialogMode) {
-		if (SDL_GetTicks() - dialogStartTime > 1000) {
-			concludeDialog();
-		}
 		currentDialog->update(renderer);
 	}
 	else {
@@ -306,6 +319,6 @@ void Area::render(Renderer* renderer) {
 		item->render(renderer, cameraX, cameraY);
 	}
 	if (dialogMode) {
-		currentDialog->render(renderer, 30, 30);
+		currentDialog->render(renderer);
 	}
 }

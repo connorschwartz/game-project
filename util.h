@@ -4,12 +4,15 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_mixer.h>
+#include <SDL_ttf.h>
 #include <string>
 #include "renderer.h"
 
 class Util {
 public:
 	static SDL_Texture* loadTexture(std::string fname, Renderer *renderer);
+
+	static SDL_Texture* loadTextureFromText(std::string text, Renderer * renderer, TTF_Font * font, SDL_Color color);
 
 	static SDL_Texture* loadTextureFromText(std::string text, Renderer *renderer, std::string fontName, int fontSize, SDL_Color color);
 

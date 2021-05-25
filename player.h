@@ -24,7 +24,7 @@ public:
 
 private:
 
-	const int MAX_SPEED = 30;			// Player's speed (pixels/second)
+	const int MAX_SPEED = 100;			// Player's speed (pixels/second)
 	// width and height of the sprite sheet
 	static const int SHEET_WIDTH = 4;
 	static const int SHEET_HEIGHT = 3;

@@ -1,7 +1,3 @@
-#include <SDL.h>
-#include <SDL_image.h>
-#include <SDL_ttf.h>
-#include <SDL_mixer.h>
 #include <string>
 #include <iostream>
 #include "util.h"
@@ -26,12 +22,10 @@ SDL_Texture* Util::loadTexture(std::string fname, Renderer *renderer) {
 	return newTexture;
 }
 
-// Loads a piece of text as a texture, with the given font, size, and color
-SDL_Texture* Util::loadTextureFromText(std::string text, Renderer *renderer, std::string fontName, int fontSize, SDL_Color color) {
-	TTF_Font* font = TTF_OpenFont(fontName.c_str(), fontSize);
+// Loads a piece of text as a texture, with the given Font
+SDL_Texture* Util::loadTextureFromText(std::string text, Renderer * renderer, TTF_Font * font, SDL_Color color) {
 	SDL_Surface* textSurface = TTF_RenderText_Solid(font, text.c_str(), color);
 	SDL_Texture* texture = nullptr;
-	TTF_CloseFont(font);
 	if (textSurface == nullptr) {
 		std::cout << "Unable to render text surface! SDL_ttf Error: " << TTF_GetError() << std::endl;
 	}
@@ -40,6 +34,12 @@ SDL_Texture* Util::loadTextureFromText(std::string text, Renderer *renderer, std
 	}
 	SDL_FreeSurface(textSurface);
 	return texture;
+}
+
+// Loads a piece of text as a texture, with the given font, size, and color
+SDL_Texture* Util::loadTextureFromText(std::string text, Renderer *renderer, std::string fontName, int fontSize, SDL_Color color) {
+	TTF_Font* font = TTF_OpenFont(fontName.c_str(), fontSize);
+	return loadTextureFromText(text, renderer, font, color);
 }
 
 // Loads a piece of text as a texture, with the given size and the default font and color

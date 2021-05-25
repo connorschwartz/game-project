@@ -1,7 +1,7 @@
 #include "npc.h"
 #include <iostream>
 
-NPC::NPC(SDL_Texture * s, AreaBlocks* blocks, int x, int y, int width, int height, int speed, std::stringstream& pattern) : Person(blocks, x, y, width, height), MAX_SPEED(speed) {
+NPC::NPC(SDL_Texture * s, AreaBlocks* blocks, int x, int y, int width, int height, int speed, std::stringstream& pattern, std::vector<std::string> npcDialog) : Person(blocks, x, y, width, height), MAX_SPEED(speed) {
 	sprites = s;
 	// Create rectangles to represent each sprite on the player's sprite sheet
 	for (int i = 0; i < SHEET_WIDTH; i++) {
@@ -12,7 +12,7 @@ NPC::NPC(SDL_Texture * s, AreaBlocks* blocks, int x, int y, int width, int heigh
 	areaBlocks = blocks;
 	// Mark the NPC's starting position as used
 	areaBlocks->markUsed(xBlock, yBlock);
-	dialog.push_back("testText");
+	dialog = npcDialog;
 	std::string movementType;
 	pattern >> movementType;
 	// For random walks, get the data for the rectangle in which the NPC will move

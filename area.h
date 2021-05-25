@@ -41,8 +41,6 @@ public:
 
 private:
 	Renderer * renderer = nullptr;
-	SDL_Texture* testText = nullptr;
-	SDL_Texture* testText2 = nullptr;
 
 	Player* player;									// Player object
 	AreaBlocks* areaBlocks;							// Mapping of free and used blocks
