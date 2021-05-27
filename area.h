@@ -6,6 +6,7 @@
 #include "stillobject.h"
 #include "npc.h"
 #include "dialogtext.h"
+#include "background.h"
 
 class Area {
 public:
@@ -44,6 +45,7 @@ private:
 
 	Player* player;									// Player object
 	AreaBlocks* areaBlocks;							// Mapping of free and used blocks
+	Background* background;							// Handles the rendering of the background textures
 	std::vector<StillObject *> stillObjects;		// Objects that don't move
 	std::vector<SDL_Texture *> stillObjectSprites;	// Sprites for objects that don't move
 	std::vector<NPC *> npcs;						// NPC objects
@@ -56,10 +58,6 @@ private:
 	int areaHeight;			// Height of the area in blocks
 	bool dialogMode;		// True if the area is paused for dialog, false otherwise
 	int dialogStartTime;	// Timestamp when the dialog-related pause began
-
-	SDL_Texture* grassTextures = nullptr;	// Grass sprite sheet
-	SDL_Rect grassTiles[4];					// Area of each grass sprite on the sheet
-	int ** grassMap;						// grass sprite number for each block
 };
 
 

@@ -28,21 +28,9 @@ void Area::initializeArea(string fileName) {
 void Area::initializeBackground(string fileName) {
 	ifstream data;
 	data.open(fileName, ios_base::out);
-	string backgroundImage;
-	data >> backgroundImage;
-	grassTextures = Util::loadTexture(backgroundImage, renderer);
-	grassTiles[0] = {0,16,16,16};
-	grassTiles[1] = {16,16,16,16};
-	grassTiles[2] = {32,16,16,16};
-	grassTiles[3] = {48,16,16,16};
-	grassMap = new int * [areaWidth];
-	for (int i = 0; i < areaWidth; i++) {
-		grassMap[i] = new int[areaHeight];
-		for (int j = 0; j < areaHeight; j++) {
-			int tileType = -1;
-			data >> grassMap[i][j];
-		}
-	}
+	int sheetWidth, sheetHeight;
+	data >> sheetWidth >> sheetHeight;
+	background = new Background(data, renderer, areaWidth, areaHeight, sheetWidth, sheetHeight);
 	data.close();
 }
 
@@ -169,9 +157,8 @@ Area::~Area() {
 	for (int i = 0; i < npcSprites.size(); i++) {
 		SDL_DestroyTexture(npcSprites[i]);
 	}
-	SDL_DestroyTexture(grassTextures);
+	delete background;
     delete player;
-	delete grassMap;
 	stillObjects.clear();
 	npcs.clear();
 }
@@ -292,11 +279,7 @@ void Area::render(Renderer* renderer) {
 	if (cameraY + Util::GAME_HEIGHT > areaHeight * Util::BLOCK_SIZE) cameraY = areaHeight * Util::BLOCK_SIZE - Util::GAME_HEIGHT;
 	SDL_Rect bgClip = {cameraX, cameraY, Util::GAME_WIDTH, Util::GAME_HEIGHT};
 	// Render the background
-	for (int i = cameraX / Util::BLOCK_SIZE; i <= (cameraX + Util::GAME_WIDTH - 1) / Util::BLOCK_SIZE; i++) {
-		for (int j = cameraY / Util::BLOCK_SIZE; j <= (cameraY + Util::GAME_HEIGHT - 1) / Util::BLOCK_SIZE; j++) {
-			renderer->render(grassTextures, &grassTiles[grassMap[i][j]], i * Util::BLOCK_SIZE - cameraX, j * Util::BLOCK_SIZE - cameraY);
-		}
-	}
+	background->render(renderer, cameraX, cameraY);
 	// Draw the player and objects
 	vector<VisibleObject *> objectsToDraw;
 	objectsToDraw.push_back(player);
