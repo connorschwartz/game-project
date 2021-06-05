@@ -15,8 +15,8 @@ public:
 	void markUsed(int x, int y);									// Mark a single block as used
 	void markUsedRectangle(int x, int y, int width, int height);	// Mark a rectangular group of blocks as used
 
-	// Mark a block as free
-	void markFree(int x, int y);
+	void markFree(int x, int y);									// Mark a single block as free
+	void markFreeRectangle(int x, int y, int width, int height);	// Mark a rectangular group of blocks as free
 
 	// Convert an (x, y) pair to a byte number and mask to find the corresponding bit
 	BlockMapping getBlockMapping(int x, int y);

@@ -11,6 +11,8 @@ public:
 	void render(SDL_Texture* texture, int x, int y);					// Render full sprite
 	void render(SDL_Texture* texture, SDL_Rect* clip, int x, int y);	// Render part of the sprite
 
+	void renderRectangle(SDL_Rect rectangle);
+
 	SDL_Texture * createTextureFromSurface(SDL_Surface* surface);
 
 	void clear();

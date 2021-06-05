@@ -47,6 +47,15 @@ void AreaBlocks::markFree(int x, int y) {
 	bitmap[mapping.byteNum] = bitmap[mapping.byteNum] & ~mapping.mask;
 }
 
+void AreaBlocks::markFreeRectangle(int x, int y, int width, int height) {
+	// Mark a (width by height) rectangle starting at (x, y) as free
+	for (int i = x; i > x - width; i--) {
+		for (int j = y; j > y - height; j--) {
+			markFree(i, j);
+		}
+	}
+}
+
 bool AreaBlocks::isFree(int x, int y) {
 //	for (int i = 0; i < 64; i++) {
 //		for (int j = 0; j < 4; j++) {

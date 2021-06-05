@@ -32,6 +32,10 @@ public:
 	// Timeskip to keep the person still during dialog or menu-related pauses
 	virtual void timeSkip(int time) = 0;
 
+	// Gives the blocks that the player is moving towards
+	int getIntendedXBlock();
+	int getIntendedYBlock();
+
 	// Accessors
 	int getSpriteDirection();
 	void setSpriteDirection(int direction);

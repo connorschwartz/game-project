@@ -27,6 +27,12 @@ void Renderer::render(SDL_Texture* texture, SDL_Rect* clip, int x, int y) {
 	SDL_RenderCopy(renderer, texture, clip, &bgRect);
 }
 
+void Renderer::renderRectangle(SDL_Rect rectangle) {
+	rectangle.x = rectangle.x + xOffset;
+	rectangle.y = rectangle.y + yOffset;
+	SDL_RenderFillRect(renderer, &rectangle);
+}
+
 SDL_Texture * Renderer::createTextureFromSurface(SDL_Surface* surface) {
 	SDL_Texture * text = SDL_CreateTextureFromSurface(renderer, surface);
 	if (text == nullptr) {

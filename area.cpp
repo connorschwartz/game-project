@@ -70,6 +70,14 @@ void Area::initializeStillObjects(string fileName) {
 		for (int i = startX; i <= endX; i += width) {
 			for (int j = startY; j <= endY; j += height) {
 				newObject = new StillObject(stillObjectSprites[spriteNum], areaBlocks, i, j, width, height, pixelWidth, pixelHeight);
+				// If there's more data, attach an event trigger to the object
+				while (!stream.eof()) {
+					string separatorChar;
+					stream >> separatorChar;
+					int xBlock, yBlock, blockWidth, blockHeight, xPixel, yPixel, width, height;
+					stream >> xBlock >> yBlock >> blockWidth >> blockHeight >> xPixel >> yPixel >> width >> height;
+					newObject->addTrigger(areaBlocks, xBlock, yBlock, blockWidth, blockHeight, xPixel, yPixel, width, height);
+				}
 				stillObjects.push_back(newObject);
 			}
 		}
@@ -262,6 +270,9 @@ void Area::moveObjects() {
 		for (auto & npc : npcs) {
 			npc->chooseDirection();
 			npc->move();
+		}
+		for (auto & object : stillObjects) {
+			object->update(player);
 		}
 	}
 }

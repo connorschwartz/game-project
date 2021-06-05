@@ -102,6 +102,24 @@ void Person::move() {
 	}
 }
 
+int Person::getIntendedXBlock() {
+	int intendedX = xBlock;
+	if (moving) {
+		if (xVel > 0) intendedX++;
+		if (xVel < 0) intendedX--;
+	}
+	return intendedX;
+}
+
+int Person::getIntendedYBlock() {
+	int intendedY = yBlock;
+	if (moving) {
+		if (yVel > 0) intendedY++;
+		if (yVel < 0) intendedY--;
+	}
+	return intendedY;
+}
+
 int Person::getSpriteDirection() {
 	return spriteDirection;
 }
