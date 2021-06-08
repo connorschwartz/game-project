@@ -9,6 +9,7 @@
 #include "player.h"
 #include "npc.h"
 #include "dialogtext.h"
+#include "areatrigger.h"
 
 using namespace std;
 
@@ -128,34 +129,50 @@ void Area::initializeNPCs(string fileName) {
 	data.close();
 }
 
-void Area::initializePlayer(string fileName) {
+void Area::initializePlayer(string fileName, int playerX, int playerY) {
 	ifstream data;
 	data.open(fileName, ios_base::out);
 	// Get the player's sprite
 	string playerFilename;
 	data >> playerFilename;
 	SDL_Texture * playerSprite = Util::loadTexture(playerFilename, renderer);
-	// Get the player's initial position
-	int xPos, yPos;
-	data >> xPos;
-	data >> yPos;
 	// Get the player's sprite width and height
 	int pixelWidth, pixelHeight;
 	data >> pixelWidth;
 	data >> pixelHeight;
-	player = new Player(playerSprite, areaBlocks, xPos, yPos, pixelWidth, pixelHeight);
+	player = new Player(playerSprite, areaBlocks, playerX, playerY, pixelWidth, pixelHeight);
 	data.close();
 }
 
-Area::Area(string directory, Renderer * r) {
+void Area::initializeAreaTriggers(string fileName) {
+	ifstream data;
+	data.open(fileName);
+	string line;
+	int triggerX, triggerY;		// The coordinates of the lower right corner of the trigger
+	int width, height;			// The dimensions of the trigger
+	string newArea;				// The name of the area led to by the trigger
+	int startX, startY;			// The starting coordinates for the player in the new area
+	while (getline(data, line) && !line.empty()) {
+		stringstream stream(line);
+		stream >> triggerX >> width >> triggerY >> height >> newArea >> startX >> startY;
+		areaTriggers.push_back(new AreaTrigger(renderer, triggerX, width, triggerY, height, newArea, startX, startY));
+	}
+}
+
+Area::Area(string directory, Renderer * r, int playerX, int playerY) {
 	renderer = r;
 	dialogMode = false;
+	paused = false;
 	currentDialog = nullptr;
+	fadeInStartTime = SDL_GetTicks();
+	alpha = 0;
+	fadeOutStartTime = -1;
 	initializeArea(directory + "/area.txt");
 	initializeBackground(directory + "/background.txt");
 	initializeStillObjects(directory + "/still_objects.txt");
 	initializeNPCs(directory + "/npcs.txt");
-	initializePlayer(directory + "/player.txt");
+	initializePlayer(directory + "/player.txt", playerX, playerY);
+	initializeAreaTriggers(directory + "/area_triggers.txt");
 }
 
 Area::~Area() {
@@ -169,11 +186,37 @@ Area::~Area() {
     delete player;
 	stillObjects.clear();
 	npcs.clear();
+	areaTriggers.clear();
+}
+
+void Area::pauseMovement() {
+	pauseStartTime = SDL_GetTicks();
+	paused = true;
+}
+
+void Area::resumeMovement() {
+	paused = false;
+	// Change the timer counts on the objects and allow them to move again
+	int timeUpdate = SDL_GetTicks() - pauseStartTime;
+	fadeInStartTime += timeUpdate;
+	player->timeSkip(timeUpdate);
+	for (auto & npc : npcs) {
+		npc->timeSkip(timeUpdate);
+	}
+}
+
+bool Area::isFaded() {
+	if (fadeOutStartTime > 0 && alpha == 0) return true;
+	return false;
+}
+
+void Area::fadeOut() {
+	fadeOutStartTime = SDL_GetTicks();
 }
 
 void Area::initiateDialog() {
+	pauseMovement();
 	dialogMode = true;
-	dialogStartTime = SDL_GetTicks();
 	currentDialog = new DialogText(talkingNPC->getDialog());
 	int playerDirection = player->getSpriteDirection();
 	npcOldDirection = talkingNPC->getSpriteDirection();
@@ -230,12 +273,8 @@ void Area::concludeDialog() {
 	delete currentDialog;
 	// Return the talking NPC to their original orientation
 	talkingNPC->setSpriteDirection(npcOldDirection);
-	// Objects should have stayed still during the dialog - update all of them accordingly
-	int timeUpdate = SDL_GetTicks() - dialogStartTime;
-	player->timeSkip(timeUpdate);
-	for (auto & npc : npcs) {
-		npc->timeSkip(timeUpdate);
-	}
+	// Unpause all of the objects that had to stop moving for the dialog
+	resumeMovement();
 }
 
 void Area::handleInput(SDL_Event e) {
@@ -256,7 +295,7 @@ void Area::handleInput(SDL_Event e) {
 }
 
 void Area::handleKeyStates(const Uint8* currentKeyStates) {
-	if (!dialogMode) {
+	if (!paused) {
 		player->handleKeyStates(currentKeyStates);
 	}
 }
@@ -265,7 +304,7 @@ void Area::moveObjects() {
 	if (dialogMode) {
 		currentDialog->update(renderer);
 	}
-	else {
+	else if (!paused) {
 		player->move();
 		for (auto & npc : npcs) {
 			npc->chooseDirection();
@@ -275,9 +314,33 @@ void Area::moveObjects() {
 			object->update(player);
 		}
 	}
+	// Update fade levels when fading in and out
+	if (fadeInStartTime >= 0) {
+		alpha = (SDL_GetTicks() - fadeInStartTime) / 3;
+		if (alpha > 255) {
+			alpha = 255;
+			fadeInStartTime = -1;
+		}
+	}
+	if (fadeOutStartTime >= 0) {
+		alpha = 255 - (SDL_GetTicks() - fadeOutStartTime) / 3;
+		if (alpha < 0) {
+			alpha = 0;
+			fadeInStartTime = -1;
+		}
+	}
 }
 
-void Area::render(Renderer* renderer) {
+Area * Area::checkAreaTriggers() {
+	Area * newArea = nullptr;
+	for (auto & trigger: areaTriggers) {
+		newArea = trigger->checkTrigger(player);
+	}
+	return newArea;
+}
+
+void Area::render(Renderer* renderer, SDL_Window * window) {
+	renderer->setAlpha(alpha);
 	// Place the camera so that the player is in the center
 	int playerX = player->getCenterX();
 	int playerY = player->getCenterY();

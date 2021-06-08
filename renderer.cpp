@@ -7,6 +7,7 @@ Renderer::Renderer(SDL_Window * window, int x, int y) {
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	xOffset = x;
 	yOffset = y;
+	alpha = 255;
 }
 
 Renderer::~Renderer() {
@@ -14,6 +15,7 @@ Renderer::~Renderer() {
 }
 
 void Renderer::render(SDL_Texture* texture, int x, int y) {
+    SDL_SetTextureAlphaMod(texture, alpha);
 	int w, h;
 	// Render an entire texture at position (x, y) within the game
 	SDL_QueryTexture(texture, nullptr, nullptr, &w, &h);
@@ -22,6 +24,7 @@ void Renderer::render(SDL_Texture* texture, int x, int y) {
 }
 
 void Renderer::render(SDL_Texture* texture, SDL_Rect* clip, int x, int y) {
+    SDL_SetTextureAlphaMod(texture, alpha);
 	// Render the subset of the texture represented by clip at position (x, y)
 	SDL_Rect bgRect = {x + xOffset, y + yOffset, clip->w, clip->h};
 	SDL_RenderCopy(renderer, texture, clip, &bgRect);
@@ -56,6 +59,10 @@ void Renderer::present() {
 	border = {xOffset + Util::GAME_WIDTH,0,xOffset,yOffset * 2 + Util::GAME_HEIGHT};
 	SDL_RenderFillRect(renderer, &border);
 	SDL_RenderPresent(renderer);
+}
+
+void Renderer::setAlpha(int a) {
+	alpha = a;
 }
 
 void Renderer::setScale(int scaleFactor) {

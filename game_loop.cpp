@@ -26,6 +26,9 @@ Renderer* renderer = nullptr;
 // The current area (town, overworld, etc.)
 Area* area = nullptr;
 
+// The area that the player is going to, if they stepped on a trigger
+Area* newArea = nullptr;
+
 // We have a logical game size (GAME_WIDTH x GAME_HEIGHT) and a physical size, which can be scaled up by
 // an integer (scaleFactor) based on the size of the game window
 int scaleFactor = 3;
@@ -99,7 +102,7 @@ int main( int argc, char* args[] )
 		return 1;
 	}
 
-	area = new Area("data/town", renderer);
+	area = new Area("data/town", renderer, 5, 14);
 
 	int quit = 0;
 	SDL_Event e;
@@ -129,8 +132,22 @@ int main( int argc, char* args[] )
 		const Uint8* currentKeyStates = SDL_GetKeyboardState(nullptr);
 		area->handleKeyStates(currentKeyStates);
 		area->moveObjects();
+		if (newArea == nullptr) {
+			newArea = area->checkAreaTriggers();
+			if (newArea != nullptr) {
+				area->fadeOut();
+				area->pauseMovement();
+				newArea->pauseMovement();
+			}
+		}
+		if (area->isFaded()) {
+			delete area;
+			area = newArea;
+			area->resumeMovement();
+			newArea = nullptr;
+		}
 		renderer->clear();
-		area->render(renderer);
+		area->render(renderer, window);
 		renderer->present();
 	}
 

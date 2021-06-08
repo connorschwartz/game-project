@@ -18,6 +18,9 @@ public:
 	void clear();
 	void present();
 
+	// Sets the fade level
+	void setAlpha(int a);
+
 	// Update the scaling between the game resolution and the window resolution
 	void setScale(int scaleFactor);
 
@@ -32,6 +35,7 @@ private:
 	SDL_Renderer * renderer;
 	int xOffset;		// Horizontal distance from the edge of the window to the edge of the game
 	int yOffset;		// Vertical distance from the edge of the window to the edge of the game
+	int alpha;			// Used for fading in and out, goes from 0 (black screen) to 255 (full color)
 };
 
 
