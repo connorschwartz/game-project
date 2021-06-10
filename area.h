@@ -18,10 +18,10 @@ public:
 	void initializeBackground(std::string fileName);
 	void initializeStillObjects(std::string fileName);
 	void initializeNPCs(std::string fileName);
-	void initializePlayer(std::string fileName, int playerX, int playerY);
+	void initializePlayer(std::string fileName, int playerX, int playerY, std::string playerSpriteDirection);
 	void initializeAreaTriggers(std::string fileName);
 
-	Area(std::string fileName, Renderer* renderer, int playerX, int playerY);
+	Area(std::string fileName, Renderer* renderer, int playerX, int playerY, std::string playerSpriteDirection);
 	~Area();
 
 	// Allows all moving objects to be paused and resumed

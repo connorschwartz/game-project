@@ -10,7 +10,7 @@
 class Player : public Person {
 public:
 
-	Player(SDL_Texture * s, AreaBlocks* areaBlocks, int x, int y, int width, int height);
+	Player(SDL_Texture * s, AreaBlocks* areaBlocks, int x, int y, std::string spriteDirection, int width, int height);
 	~Player();
 
 	// Update the player character based on user input

@@ -1,6 +1,7 @@
 #ifndef Person_H
 #define Person_H
 
+#include <string>
 #include "visibleobject.h"
 #include "areablocks.h"
 
@@ -22,7 +23,7 @@ public:
 		UP
 	};
 
-	Person(AreaBlocks* blocks, int x, int y, int width, int height);
+	Person(AreaBlocks* blocks, int x, int y, std::string spriteDirection, int width, int height);
 	virtual ~Person() = 0;
 
 	void setDirection();

@@ -25,7 +25,7 @@ private:
 
 	const int DRAW_FREQ = 20;			// Number of milliseconds per character drawn
 	const int X_START = 10;				// X-index of the pixel where the dialog begins
-	const int Y_START = 10;				// Y-ndex of the pixel where the dialog begins
+	const int Y_START = 7;				// Y-ndex of the pixel where the dialog begins
 	const int TEXT_WIDTH = 236;			// Width of the text, in pixels
 	const int LINE_HEIGHT = 10;			// Height of each line of text, in pixels
 	const int FONT_SIZE = 15;			// Size of the font

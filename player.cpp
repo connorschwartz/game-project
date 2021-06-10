@@ -3,7 +3,7 @@
 #include "player.h"
 
 
-Player::Player(SDL_Texture * s, AreaBlocks* blocks, int x, int y, int width, int height) : Person(blocks, x, y, width, height) {
+Player::Player(SDL_Texture * s, AreaBlocks* blocks, int x, int y, std::string spriteDirection, int width, int height) : Person(blocks, x, y, spriteDirection, width, height) {
 	sprites = s;
 	// Create rectangles to represent each sprite on the player's sprite sheet
 	for (int i = 0; i < SHEET_WIDTH; i++) {

@@ -30,7 +30,8 @@ void Renderer::render(SDL_Texture* texture, SDL_Rect* clip, int x, int y) {
 	SDL_RenderCopy(renderer, texture, clip, &bgRect);
 }
 
-void Renderer::renderRectangle(SDL_Rect rectangle) {
+void Renderer::renderRectangle(SDL_Rect rectangle, unsigned char r, unsigned char g, unsigned char b) {
+	SDL_SetRenderDrawColor(renderer, r, g, b, alpha);
 	rectangle.x = rectangle.x + xOffset;
 	rectangle.y = rectangle.y + yOffset;
 	SDL_RenderFillRect(renderer, &rectangle);
@@ -50,6 +51,7 @@ void Renderer::clear() {
 
 void Renderer::present() {
 	// Cover up the areas outside the game, so that only the game area is displayed
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	SDL_Rect border = {0,0,xOffset,yOffset * 2 + Util::GAME_HEIGHT};
 	SDL_RenderFillRect(renderer, &border);
 	border = {0,yOffset + Util::GAME_HEIGHT,xOffset * 2 + Util::GAME_WIDTH,yOffset};

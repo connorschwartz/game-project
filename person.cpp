@@ -4,7 +4,7 @@
 #include "person.h"
 
 
-Person::Person(AreaBlocks* blocks, int x, int y, int width, int height) : VisibleObject(x, y, width, height) {
+Person::Person(AreaBlocks* blocks, int x, int y, std::string startSpriteDirection, int width, int height) : VisibleObject(x, y, width, height) {
 	areaBlocks = blocks;
 	xVel = 0;
 	yVel = 0;
@@ -12,6 +12,9 @@ Person::Person(AreaBlocks* blocks, int x, int y, int width, int height) : Visibl
 	lastMove = SDL_GetTicks();
 	lastStep = LEFT_FOOT;
 	spriteDirection = DOWN;
+	if (startSpriteDirection.compare("UP") == 0) spriteDirection = UP;
+	if (startSpriteDirection.compare("LEFT") == 0) spriteDirection = LEFT;
+	if (startSpriteDirection.compare("RIGHT") == 0) spriteDirection = RIGHT;
 	spriteGait = STANDING;
 	wantsToMove = false;
 	desiredDirection = DOWN;

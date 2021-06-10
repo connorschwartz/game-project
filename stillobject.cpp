@@ -18,7 +18,7 @@ void StillObject::render(Renderer* renderer, int cameraX, int cameraY) {
 	for (auto & trigger : spriteTriggers) {
 		if (trigger->isTriggered()) {
 			SDL_Rect triggerArea = trigger->getRegion(cameraX, cameraY, xPos, yPos);
-			renderer->renderRectangle(triggerArea);
+			renderer->renderRectangle(triggerArea, 0, 0, 0);
 		}
 	}
 }

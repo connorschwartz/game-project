@@ -1,13 +1,13 @@
 Images:
 0 images/youngboy.png
 NPCs:
-0 20 20 16 20 50 2 RANDOM_WALK 18 18 22 22 1000
+0 20 20 DOWN 16 20 50 2 RANDOM_WALK 18 18 22 22 1000
 Wow, your pants look expensive.
 Mom won't let me wear expensive pants, she says I would end up ruining them.
-0 7 7 16 20 70 1 WALK_PATH DOWN 5 RIGHT 7 UP 3 LEFT 2 UP 2 LEFT 5
+0 7 7 DOWN 16 20 70 1 WALK_PATH DOWN 5 RIGHT 7 UP 3 LEFT 2 UP 2 LEFT 5
 I committed tax fraud!
-0 21 21 16 20 30 1 WALK_PATH UP 5 DOWN 5
+0 21 21 DOWN 16 20 30 1 WALK_PATH UP 5 DOWN 5
 Wow, there sure are a lot of trees in this village. I'll climb one of them if you give me 10 gold coins!
-0 5 12 16 20 40 2 STAND_STILL
+0 5 12 DOWN 16 20 40 2 STAND_STILL
 See that guy over there? He committed tax fraud.
 I'm about to make an arrest!

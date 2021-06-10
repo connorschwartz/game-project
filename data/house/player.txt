@@ -1,0 +1,2 @@
+images/player.png
+16 24

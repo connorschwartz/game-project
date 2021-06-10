@@ -7,7 +7,7 @@ class Area;
 class AreaTrigger {
 public:
 
-	AreaTrigger(Renderer * renderer, int triggerX, int width, int triggerY, int height, std::string newArea, int startX, int startY);
+	AreaTrigger(Renderer * renderer, int triggerX, int width, int triggerY, int height, std::string newArea, int startX, int startY, std::string startDirection);
 	~AreaTrigger();
 
 	Area * checkTrigger(Player * player);
@@ -15,10 +15,11 @@ public:
 
 private:
 
-	int triggerX, triggerY;			// Coordinates of the lower right part of the trigger within the area
-	int width, height;				// Block dimensions of the trigger
-	std::string newArea;			// The area that the trigger leads to
-	int startX, startY;				// The block where the player starts in the new area
+	int triggerX, triggerY;				// Coordinates of the lower right part of the trigger within the area
+	int width, height;					// Block dimensions of the trigger
+	std::string newArea;				// The area that the trigger leads to
+	int startX, startY;					// The block where the player starts in the new area
+	std::string startSpriteDirection;	// The direction the player is facing when entering the new area
 
 	Renderer * renderer;
 

@@ -1,1 +1,1 @@
-16 1 5 1 data/town 20 0
+16 1 5 1 data/house 8 8 UP

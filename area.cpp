@@ -16,10 +16,6 @@ using namespace std;
 void Area::initializeArea(string fileName) {
 	ifstream data;
 	data.open(fileName, ios_base::out);
-	string text1;
-	string text2;
-	data >> text1;
-	data >> text2;
 	data >> areaWidth;
 	data >> areaHeight;
 	areaBlocks = new AreaBlocks(areaWidth, areaHeight);
@@ -106,16 +102,17 @@ void Area::initializeNPCs(string fileName) {
 		getline(data, line);
 	}
 	// Load in the data for each object or rectangular group of objects
-	int spriteNum;		// Index number of the sprite for the object
-	int xBlock;			// x-coordinate of the NPC's initial block
-	int yBlock;			// y-coordinate of the NPC's initial block
-	int pixelWidth;		// Width of the sprite, in pixels
-	int pixelHeight;	// Height of the sprite, in pixels
-	int speed;			// NPC's speed, in pixels/second
-	int numLines;		// Number of dialog lines
+	int spriteNum;			// Index number of the sprite for the object
+	int xBlock;				// x-coordinate of the NPC's initial block
+	int yBlock;				// y-coordinate of the NPC's initial block
+	string spriteDirection;	// Direction the NPC is initially facing
+	int pixelWidth;			// Width of the sprite, in pixels
+	int pixelHeight;		// Height of the sprite, in pixels
+	int speed;				// NPC's speed, in pixels/second
+	int numLines;			// Number of dialog lines
 	while (getline(data, line) && !line.empty()) {
 		stringstream stream(line);
-		stream >> spriteNum >> xBlock >> yBlock >> pixelWidth >> pixelHeight >> speed >> numLines;
+		stream >> spriteNum >> xBlock >> yBlock >> spriteDirection >> pixelWidth >> pixelHeight >> speed >> numLines;
 		std::vector<std::string> npcDialog;
 		std::string nextLine;
 		for (int i = 0; i < numLines; i++) {
@@ -123,13 +120,13 @@ void Area::initializeNPCs(string fileName) {
 			npcDialog.push_back(nextLine);
 		}
 		// Create the NPC, passing the rest of the line, since it contains the NPC's behavior data
-		newNPC = new NPC(npcSprites[spriteNum], areaBlocks, xBlock, yBlock, pixelWidth, pixelHeight, speed, stream, npcDialog);
+		newNPC = new NPC(npcSprites[spriteNum], areaBlocks, xBlock, yBlock, spriteDirection, pixelWidth, pixelHeight, speed, stream, npcDialog);
 		npcs.push_back(newNPC);
 	}
 	data.close();
 }
 
-void Area::initializePlayer(string fileName, int playerX, int playerY) {
+void Area::initializePlayer(string fileName, int playerX, int playerY, std::string playerSpriteDirection) {
 	ifstream data;
 	data.open(fileName, ios_base::out);
 	// Get the player's sprite
@@ -140,7 +137,7 @@ void Area::initializePlayer(string fileName, int playerX, int playerY) {
 	int pixelWidth, pixelHeight;
 	data >> pixelWidth;
 	data >> pixelHeight;
-	player = new Player(playerSprite, areaBlocks, playerX, playerY, pixelWidth, pixelHeight);
+	player = new Player(playerSprite, areaBlocks, playerX, playerY, playerSpriteDirection, pixelWidth, pixelHeight);
 	data.close();
 }
 
@@ -152,14 +149,15 @@ void Area::initializeAreaTriggers(string fileName) {
 	int width, height;			// The dimensions of the trigger
 	string newArea;				// The name of the area led to by the trigger
 	int startX, startY;			// The starting coordinates for the player in the new area
+	string startDirection;		// The starting direction for the player in the new area
 	while (getline(data, line) && !line.empty()) {
 		stringstream stream(line);
-		stream >> triggerX >> width >> triggerY >> height >> newArea >> startX >> startY;
-		areaTriggers.push_back(new AreaTrigger(renderer, triggerX, width, triggerY, height, newArea, startX, startY));
+		stream >> triggerX >> width >> triggerY >> height >> newArea >> startX >> startY >> startDirection;
+		areaTriggers.push_back(new AreaTrigger(renderer, triggerX, width, triggerY, height, newArea, startX, startY, startDirection));
 	}
 }
 
-Area::Area(string directory, Renderer * r, int playerX, int playerY) {
+Area::Area(string directory, Renderer * r, int playerX, int playerY, string playerSpriteDirection) {
 	renderer = r;
 	dialogMode = false;
 	paused = false;
@@ -171,7 +169,7 @@ Area::Area(string directory, Renderer * r, int playerX, int playerY) {
 	initializeBackground(directory + "/background.txt");
 	initializeStillObjects(directory + "/still_objects.txt");
 	initializeNPCs(directory + "/npcs.txt");
-	initializePlayer(directory + "/player.txt", playerX, playerY);
+	initializePlayer(directory + "/player.txt", playerX, playerY, playerSpriteDirection);
 	initializeAreaTriggers(directory + "/area_triggers.txt");
 }
 
@@ -351,7 +349,9 @@ void Area::render(Renderer* renderer, SDL_Window * window) {
 	if (cameraY < 0) cameraY = 0;
 	if (cameraX + Util::GAME_WIDTH > areaWidth * Util::BLOCK_SIZE) cameraX = areaWidth * Util::BLOCK_SIZE - Util::GAME_WIDTH;
 	if (cameraY + Util::GAME_HEIGHT > areaHeight * Util::BLOCK_SIZE) cameraY = areaHeight * Util::BLOCK_SIZE - Util::GAME_HEIGHT;
-	SDL_Rect bgClip = {cameraX, cameraY, Util::GAME_WIDTH, Util::GAME_HEIGHT};
+	// If the area is too small for scrolling, set negative camera values
+	if (Util::GAME_WIDTH >= areaWidth * Util::BLOCK_SIZE) cameraX = (areaWidth * Util::BLOCK_SIZE - Util::GAME_WIDTH) / 2;
+	if (Util::GAME_HEIGHT >= areaHeight * Util::BLOCK_SIZE) cameraY = (areaHeight * Util::BLOCK_SIZE - Util::GAME_HEIGHT) / 2;
 	// Render the background
 	background->render(renderer, cameraX, cameraY);
 	// Draw the player and objects

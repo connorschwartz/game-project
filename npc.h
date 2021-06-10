@@ -17,7 +17,7 @@ public:
 		WALK_PATH
 	};
 
-	NPC(SDL_Texture * s, AreaBlocks* areaBlocks, int x, int y, int width, int height, int speed, std::stringstream& pattern, std::vector<std::string> npcDialog);
+	NPC(SDL_Texture * s, AreaBlocks* areaBlocks, int x, int y, std::string spriteDirection, int width, int height, int speed, std::stringstream& pattern, std::vector<std::string> npcDialog);
 	~NPC();
 
 	// Choose movement direction based on the NPC's pattern
