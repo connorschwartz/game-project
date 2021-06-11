@@ -2,8 +2,9 @@
 #include "util.h"
 #include <iostream>
 
-StillObject::StillObject(SDL_Texture * s, AreaBlocks* blocks, int x, int y, int blockWidth, int blockHeight, int width, int height) : VisibleObject(x, y, width, height) {
+StillObject::StillObject(SDL_Texture * s, AreaBlocks* blocks, int x, int y, int blockWidth, int blockHeight, int lift, int width, int height) : VisibleObject(x, y, width, height) {
 	sprite = s;
+	spriteLift = lift;
 	// Mark the area taken up by the object as used
 	blocks->markUsedRectangle(x, y, blockWidth, blockHeight);
 }
@@ -13,7 +14,7 @@ StillObject::~StillObject() {
 }
 
 void StillObject::render(Renderer* renderer, int cameraX, int cameraY) {
-	renderer->render(sprite, topLeftX(cameraX), topLeftY(cameraY));
+	renderer->render(sprite, topLeftX(cameraX), topLeftY(cameraY + spriteLift));
 	// Draw the trigger-related objects for any active trigger
 	for (auto & trigger : spriteTriggers) {
 		if (trigger->isTriggered()) {

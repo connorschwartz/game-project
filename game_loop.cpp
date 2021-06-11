@@ -102,7 +102,7 @@ int main( int argc, char* args[] )
 		return 1;
 	}
 
-	area = new Area("data/town", renderer, 16, 32, "DOWN");
+	area = new Area("data/town", renderer, 16, 8, "DOWN");
 
 	int quit = 0;
 	SDL_Event e;

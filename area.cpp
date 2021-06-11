@@ -54,19 +54,23 @@ void Area::initializeStillObjects(string fileName) {
 	int spriteNum;		// Index number of the sprite for the object
 	int startX;			// x-coordinate of the bottom right block of the first object
 	int width;			// Block width of each object
+	int xSpacing;		// Distance between objects in the x direction
 	int endX;			// x-coordinate of the bottom right block of the final object
 	int startY;			// y-coordinate of the bottom right block of the first object
 	int height;			// Block width of each object
+	int ySpacing;		// Distance between objects in the y direction
 	int endY;			// y-coordinate of the bottom right block of the final object
+	int spriteLift;		// Distance from the bottom of the object where the sprite begins
 	int pixelWidth;		// Width of the sprite, in pixels
 	int pixelHeight;	// Height of the sprite, in pixels
 	while (getline(data, line) && !line.empty()) {
+		std::cout << line << std::endl;
 		stringstream stream(line);
-		stream >> spriteNum >> startX >> width >> endX >> startY >> height >> endY >> pixelWidth >> pixelHeight;
+		stream >> spriteNum >> startX >> width >> xSpacing >> endX >> startY >> height >> ySpacing >> endY >> spriteLift >> pixelWidth >> pixelHeight;
 		// Create the object, or the group of objects if applicable
-		for (int i = startX; i <= endX; i += width) {
-			for (int j = startY; j <= endY; j += height) {
-				newObject = new StillObject(stillObjectSprites[spriteNum], areaBlocks, i, j, width, height, pixelWidth, pixelHeight);
+		for (int i = startX; i <= endX; i += width + xSpacing) {
+			for (int j = startY; j <= endY; j += height + ySpacing) {
+				newObject = new StillObject(stillObjectSprites[spriteNum], areaBlocks, i, j, width, height, spriteLift, pixelWidth, pixelHeight);
 				// If there's more data, attach an event trigger to the object
 				while (!stream.eof()) {
 					string separatorChar;

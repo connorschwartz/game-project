@@ -48,7 +48,9 @@ void Background::render(Renderer * renderer, int cameraX, int cameraY) {
 	}
 	for (int i = startX; i <= endX; i++) {
 		for (int j = startY; j <= endY; j++) {
-			renderer->render(grassTextures, &grassTiles[grassMap[j][i]], i * Util::BLOCK_SIZE - cameraX, j * Util::BLOCK_SIZE - cameraY);
+			if (grassMap[j][i] != -1) {
+				renderer->render(grassTextures, &grassTiles[grassMap[j][i]], i * Util::BLOCK_SIZE - cameraX, j * Util::BLOCK_SIZE - cameraY);
+			}
 		}
 	}
 }
