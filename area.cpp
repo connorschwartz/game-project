@@ -15,10 +15,35 @@ using namespace std;
 
 void Area::initializeArea(string fileName) {
 	ifstream data;
+	string line;
 	data.open(fileName, ios_base::out);
-	data >> areaWidth;
-	data >> areaHeight;
+	getline(data, line);
+	stringstream stream(line);
+	stream >> areaWidth;
+	stream >> areaHeight;
 	areaBlocks = new AreaBlocks(areaWidth, areaHeight);
+	// Read in the default blocked areas, if provided. Otherwise no areas will be blocked by default.
+	getline(data, line);
+	if (line.compare("Default:") == 0) {
+		getline(data, line);
+		int value;
+		for (int i = 0; i < areaHeight; i++) {
+			stringstream stream(line);
+			bool block = true;
+			int currentX = 0;
+			while (stream >> value) {
+				currentX = currentX + value;
+				if (block) {
+					areaBlocks->markUsedRectangle(currentX - 1, i, value, 1);
+					block = false;
+				}
+				else {
+					block = true;
+				}
+			}
+			getline(data, line);
+		}
+	}
 	data.close();
 }
 
@@ -36,11 +61,10 @@ void Area::initializeStillObjects(string fileName) {
 	data.open(fileName, ios_base::out);
 	string line;
 	getline(data, line);	// Skip the first line, since it's just the header for the Images section
-	string terminator = "Objects:";
 	StillObject * newObject;
 	// Load in the sprite for each filename listed in the data file, stopping when we reach the Objects section
 	getline(data, line);
-	while (line.compare(terminator) != 0) {
+	while (line.compare("Objects:") != 0) {
 		stringstream stream(line);
 		int index;
 		string filename;
@@ -64,7 +88,6 @@ void Area::initializeStillObjects(string fileName) {
 	int pixelWidth;		// Width of the sprite, in pixels
 	int pixelHeight;	// Height of the sprite, in pixels
 	while (getline(data, line) && !line.empty()) {
-		std::cout << line << std::endl;
 		stringstream stream(line);
 		stream >> spriteNum >> startX >> width >> xSpacing >> endX >> startY >> height >> ySpacing >> endY >> spriteLift >> pixelWidth >> pixelHeight;
 		// Create the object, or the group of objects if applicable
@@ -337,6 +360,7 @@ Area * Area::checkAreaTriggers() {
 	Area * newArea = nullptr;
 	for (auto & trigger: areaTriggers) {
 		newArea = trigger->checkTrigger(player);
+		if (newArea != nullptr) break;
 	}
 	return newArea;
 }
