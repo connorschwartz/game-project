@@ -14,6 +14,10 @@ Player::Player(SDL_Texture * s, AreaBlocks* blocks, int x, int y, std::string sp
 	areaBlocks = blocks;
 	// Mark the player's starting position as used
 	areaBlocks->markUsed(xBlock, yBlock);
+	upPressedTime = -1;
+	leftPressedTime = -1;
+	rightPressedTime = -1;
+	downPressedTime = -1;
 }
 
 Player::~Player() {
@@ -23,23 +27,40 @@ Player::~Player() {
 void Player::handleKeyStates(const Uint8* currentKeyStates) {
 
 	// Determine the direction in which the player wants to move
-	wantsToMove = true;
-	desiredSpeed = MAX_SPEED;
-	if (currentKeyStates[SDL_SCANCODE_W]) {
-		desiredDirection = UP;
+	if (currentKeyStates[SDL_SCANCODE_W]) std::cout << "Pressing up" << std::endl;
+	desiredSpeed = 0;
+	if (currentKeyStates[SDL_SCANCODE_W] && upPressedTime < 0) {
+		upPressedTime = SDL_GetTicks();
+		std::cout << upPressedTime <<std::endl;
 	}
-	else if (currentKeyStates[SDL_SCANCODE_S]) {
-		desiredDirection = DOWN;
+	else if (!currentKeyStates[SDL_SCANCODE_W]) {
+		upPressedTime = -1;
 	}
-	else if (currentKeyStates[SDL_SCANCODE_A]) {
-		desiredDirection = LEFT;
+	if (currentKeyStates[SDL_SCANCODE_S] && downPressedTime < 0) {
+		downPressedTime = SDL_GetTicks();
+		std::cout << downPressedTime <<std::endl;
 	}
-	else if (currentKeyStates[SDL_SCANCODE_D]) {
-		desiredDirection = RIGHT;
+	else if (!currentKeyStates[SDL_SCANCODE_S]) {
+		downPressedTime = -1;
 	}
-	else {
-		wantsToMove = false;
-		desiredSpeed = 0;
+	if (currentKeyStates[SDL_SCANCODE_A] && leftPressedTime < 0) {
+		leftPressedTime = SDL_GetTicks();
+		std::cout << leftPressedTime <<std::endl;
+	}
+	else if (!currentKeyStates[SDL_SCANCODE_A]) {
+		leftPressedTime = -1;
+	}
+	if (currentKeyStates[SDL_SCANCODE_D] && rightPressedTime < 0) {
+		rightPressedTime = SDL_GetTicks();
+		std::cout << rightPressedTime <<std::endl;
+	}
+	else if (!currentKeyStates[SDL_SCANCODE_D]) {
+		rightPressedTime = -1;
+	}
+	wantsToMove = (upPressedTime >= 0) || (downPressedTime >= 0) || (leftPressedTime >= 0) || (rightPressedTime >= 0);
+	if (wantsToMove) {
+		desiredDirection = lastPressedDirection();
+		desiredSpeed = MAX_SPEED;
 	}
 	// Set the direction accordingly
 	setDirection();
@@ -53,6 +74,21 @@ void Player::timeSkip(int time) {
 void Player::render(Renderer* renderer, int cameraX, int cameraY) {
 	// Draw the player using the current sprite
 	renderer->render(sprites, &spriteSheet[spriteDirection][spriteGait], topLeftX(cameraX), topLeftY(cameraY));
+}
+
+int Player::lastPressedDirection() {
+	if (upPressedTime > leftPressedTime && upPressedTime > rightPressedTime && upPressedTime > downPressedTime) {
+		return UP;
+	}
+	else if (leftPressedTime > rightPressedTime && leftPressedTime > downPressedTime) {
+		return LEFT;
+	}
+	else if (rightPressedTime > downPressedTime) {
+		return RIGHT;
+	}
+	else {
+		return DOWN;
+	}
 }
 
 

@@ -53,6 +53,29 @@ void Area::initializeBackground(string fileName) {
 	int sheetWidth, sheetHeight;
 	data >> sheetWidth >> sheetHeight;
 	background = new Background(data, renderer, areaWidth, areaHeight, sheetWidth, sheetHeight);
+	// Optional list of background tile types which are blocked by default
+	string line;
+	getline(data, line);
+	if (getline(data, line) && !line.empty() && line.compare("Blocked:") == 0) {
+		getline(data, line);
+		// Read from the file which tile types are automatically blocked
+		int tileTypes [sheetWidth * sheetHeight] = { };
+		stringstream stream(line);
+		int tileNum;
+		while (stream >> tileNum) {
+			std::cout << tileNum << std::endl;
+			tileTypes[tileNum] = 1;
+		}
+		// Mark the appropriate area blocks as used
+		for (int i = 0; i < areaHeight; i++) {
+			for (int j = 0; j < areaWidth; j++) {
+				if (tileTypes[background->getTileType(i, j)] == 1) {
+					areaBlocks->markUsed(i, j);
+				}
+			}
+		}
+	}
+	std::cout << line << std::endl;
 	data.close();
 }
 

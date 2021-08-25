@@ -10,6 +10,8 @@ public:
 
 	void render(Renderer * renderer, int cameraX, int cameraY);
 
+	int getTileType(int x, int y);		// Returns the tile number of background tile (x, y)
+
 private:
 
 	SDL_Texture * grassTextures = nullptr;				// Grass sprite sheet

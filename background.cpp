@@ -55,4 +55,7 @@ void Background::render(Renderer * renderer, int cameraX, int cameraY) {
 	}
 }
 
+int Background::getTileType(int x, int y) {
+	return grassMap[y][x];
+}
 

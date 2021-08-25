@@ -22,6 +22,9 @@ public:
 	// Used to stop player movement during dialog
 	void timeSkip(int time);
 
+	// Determines which button was pressed most recently by the player
+	int lastPressedDirection();
+
 private:
 
 	const int MAX_SPEED = 100;			// Player's speed (pixels/second)
@@ -31,6 +34,12 @@ private:
 
 	SDL_Rect spriteSheet[SHEET_WIDTH][SHEET_HEIGHT];		// Rectangles to represent the sprites on the sheet
 	SDL_Texture* sprites;			// Sprite sheet
+
+	// Time when each direction key was last pressed
+	int upPressedTime;
+	int leftPressedTime;
+	int rightPressedTime;
+	int downPressedTime;
 
 };
 
