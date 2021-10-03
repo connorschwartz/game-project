@@ -37,6 +37,13 @@ void Renderer::renderRectangle(SDL_Rect rectangle, unsigned char r, unsigned cha
 	SDL_RenderFillRect(renderer, &rectangle);
 }
 
+void Renderer::renderTextBox(int startX, int startY, int width, int height) {
+	SDL_Rect rectangle = {startX, startY, width, height};
+	renderRectangle(rectangle, 0, 0, 0);
+	rectangle = {startX + 2, startY + 2, width - 4, height - 4};
+	renderRectangle(rectangle, 255, 255, 255);
+}
+
 SDL_Texture * Renderer::createTextureFromSurface(SDL_Surface* surface) {
 	SDL_Texture * text = SDL_CreateTextureFromSurface(renderer, surface);
 	if (text == nullptr) {

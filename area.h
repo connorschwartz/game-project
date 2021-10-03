@@ -7,6 +7,7 @@
 #include "npc.h"
 #include "dialogtext.h"
 #include "background.h"
+#include "menu.h"
 
 class AreaTrigger;
 
@@ -41,6 +42,10 @@ public:
 	// End the dialog
 	void concludeDialog();
 
+	// Open and close the pause menu
+	void openMenu();
+	void closeMenu();
+
 	// Functions to handle user input
 	void handleInput(SDL_Event e);
 	void handleKeyStates(const Uint8* currentKeyStates);
@@ -68,10 +73,12 @@ private:
 	NPC * talkingNPC;								// The NPC who is currently talking
 	std::vector<std::string> dialogText;			// Dialog for the talking NPC
 	DialogText * currentDialog;						// The current piece of text to render
+	Menu * pauseMenu;								// The pause menu
 	int npcOldDirection;							// The NPC's direction, before they are talked to
 	int areaWidth;			// Width of the area in blocks
 	int areaHeight;			// Height of the area in blocks
 	bool dialogMode;		// True if the area is in dialog mode, false otherwise
+	bool pauseMenuMode;		// True if the pause menu is open, false otherwise
 	bool paused;			// True if the objects are paused, false otherwise
 	int pauseStartTime;		// Timestamp when the pause began
 	int alpha;				// 0 when the screen is fully faded to black, 255 for full color

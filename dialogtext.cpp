@@ -113,7 +113,7 @@ void DialogText::update(Renderer * renderer) {
 }
 
 void DialogText::render(Renderer * renderer) {
-	renderer->renderRectangle({5, 5, 246, 30}, 255, 255, 255);
+	renderer->renderTextBox(5, 5, Util::GAME_WIDTH - 10, 30);
 	if (previousText == nullptr) {
 		if (currentText != nullptr) {
 			renderer->render(currentText, X_START, Y_START);

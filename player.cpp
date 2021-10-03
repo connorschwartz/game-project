@@ -27,32 +27,27 @@ Player::~Player() {
 void Player::handleKeyStates(const Uint8* currentKeyStates) {
 
 	// Determine the direction in which the player wants to move
-	if (currentKeyStates[SDL_SCANCODE_W]) std::cout << "Pressing up" << std::endl;
 	desiredSpeed = 0;
 	if (currentKeyStates[SDL_SCANCODE_W] && upPressedTime < 0) {
 		upPressedTime = SDL_GetTicks();
-		std::cout << upPressedTime <<std::endl;
 	}
 	else if (!currentKeyStates[SDL_SCANCODE_W]) {
 		upPressedTime = -1;
 	}
 	if (currentKeyStates[SDL_SCANCODE_S] && downPressedTime < 0) {
 		downPressedTime = SDL_GetTicks();
-		std::cout << downPressedTime <<std::endl;
 	}
 	else if (!currentKeyStates[SDL_SCANCODE_S]) {
 		downPressedTime = -1;
 	}
 	if (currentKeyStates[SDL_SCANCODE_A] && leftPressedTime < 0) {
 		leftPressedTime = SDL_GetTicks();
-		std::cout << leftPressedTime <<std::endl;
 	}
 	else if (!currentKeyStates[SDL_SCANCODE_A]) {
 		leftPressedTime = -1;
 	}
 	if (currentKeyStates[SDL_SCANCODE_D] && rightPressedTime < 0) {
 		rightPressedTime = SDL_GetTicks();
-		std::cout << rightPressedTime <<std::endl;
 	}
 	else if (!currentKeyStates[SDL_SCANCODE_D]) {
 		rightPressedTime = -1;

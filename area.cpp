@@ -63,7 +63,6 @@ void Area::initializeBackground(string fileName) {
 		stringstream stream(line);
 		int tileNum;
 		while (stream >> tileNum) {
-			std::cout << tileNum << std::endl;
 			tileTypes[tileNum] = 1;
 		}
 		// Mark the appropriate area blocks as used
@@ -75,7 +74,6 @@ void Area::initializeBackground(string fileName) {
 			}
 		}
 	}
-	std::cout << line << std::endl;
 	data.close();
 }
 
@@ -210,8 +208,10 @@ void Area::initializeAreaTriggers(string fileName) {
 Area::Area(string directory, Renderer * r, int playerX, int playerY, string playerSpriteDirection) {
 	renderer = r;
 	dialogMode = false;
+	pauseMenuMode = false;
 	paused = false;
 	currentDialog = nullptr;
+	pauseMenu = nullptr;
 	fadeInStartTime = SDL_GetTicks();
 	alpha = 0;
 	fadeOutStartTime = -1;
@@ -285,7 +285,7 @@ void Area::initiateDialog() {
 }
 
 void Area::checkDialog() {
-	if (!dialogMode) {
+	if (!paused) {
 		int xBlock = player->getBlockX();
 		int yBlock = player->getBlockY();
 		int playerDirection = player->getSpriteDirection();
@@ -325,7 +325,32 @@ void Area::concludeDialog() {
 	resumeMovement();
 }
 
+void Area::openMenu() {
+	if (!dialogMode) {
+		pauseMenuMode = true;
+		pauseMenu = new Menu();
+		pauseMovement();
+	}
+}
+
+void Area::closeMenu() {
+	pauseMenuMode = false;
+	delete pauseMenu;
+	resumeMovement();
+}
+
 void Area::handleInput(SDL_Event e) {
+
+	// When the user hits the P key...
+	if (e.type == SDL_KEYDOWN && e.key.repeat == 0 && e.key.keysym.sym == SDLK_p) {
+		// Toggle the menu open/closed
+		if (pauseMenuMode) {
+			closeMenu();
+		}
+		else {
+			openMenu();
+		}
+	}
 	// When the user hits the space bar...
 	if (e.type == SDL_KEYDOWN && e.key.repeat == 0 && e.key.keysym.sym == SDLK_SPACE) {
 		// Advance the dialog if we're in dialog mode
@@ -339,6 +364,10 @@ void Area::handleInput(SDL_Event e) {
 		else {
 			checkDialog();
 		}
+	}
+	// If we're in menu mode, pass the key to the menu
+	if (pauseMenuMode) {
+		pauseMenu->handleInput();
 	}
 }
 
@@ -428,5 +457,8 @@ void Area::render(Renderer* renderer, SDL_Window * window) {
 	}
 	if (dialogMode) {
 		currentDialog->render(renderer);
+	}
+	if (pauseMenuMode) {
+		pauseMenu->render(renderer);
 	}
 }

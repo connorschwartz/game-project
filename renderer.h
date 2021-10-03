@@ -13,6 +13,8 @@ public:
 
 	void renderRectangle(SDL_Rect rectangle, unsigned char r, unsigned char g, unsigned char b);
 
+	void renderTextBox(int startX, int startY, int width, int height);
+
 	SDL_Texture * createTextureFromSurface(SDL_Surface* surface);
 
 	void clear();
